@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoadSense — Create Account</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="brand" style="border:none;padding:0;margin-bottom:6px;">
+      <div class="brand-mark">
+        <svg viewBox="0 0 32 32" fill="none">
+          <path d="M4 26 L16 4 L28 26" stroke="#FFB020" stroke-width="2.4" stroke-linejoin="round"/>
+          <rect x="12" y="16" width="8" height="8" stroke="#FFB020" stroke-width="1.6"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">RoadSense</div>
+        <div class="brand-tag">RIDE SAFER</div>
+      </div>
+    </div>
+    <h2>Create your account</h2>
+    <p class="sub">See the sign. Know the road. Ride safer.</p>
+
+    {% if error %}
+    <div class="login-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST" id="signupForm">
+      <div class="login-field">
+        <label>FULL NAME</label>
+        <input type="text" name="name" value="{{ form.name or '' }}" autocomplete="name" required>
+      </div>
+      <div class="login-field">
+        <label>USERNAME</label>
+        <input type="text" name="username" value="{{ form.username or '' }}" autocomplete="username" required>
+      </div>
+      <div class="login-field">
+        <label>EMAIL</label>
+        <input type="email" name="email" value="{{ form.email or '' }}" autocomplete="email" required>
+      </div>
+      <div class="login-field">
+        <label>PASSWORD</label>
+        <input type="password" name="password" id="pw" autocomplete="new-password" required>
+        <div class="pw-meter"><div class="pw-meter-fill" id="pwFill"></div></div>
+        <div class="pw-hint" id="pwHint">At least 8 characters</div>
+      </div>
+      <div class="login-field">
+        <label>CONFIRM PASSWORD</label>
+        <input type="password" name="confirm" id="pwConfirm" autocomplete="new-password" required>
+        <div class="pw-hint" id="matchHint"></div>
+      </div>
+      <button type="submit" class="btn-primary btn-full">Create Account</button>
+    </form>
+    <div class="login-hint">Already have an account? <a href="{{ url_for('login') }}">Sign in</a></div>
+  </div>
+</div>
+
+<script>
+const pw = document.getElementById('pw');
+const pwFill = document.getElementById('pwFill');
+const pwHint = document.getElementById('pwHint');
+const pwConfirm = document.getElementById('pwConfirm');
+const matchHint = document.getElementById('matchHint');
+
+pw.addEventListener('input', ()=>{
+  const v = pw.value;
+  let score = 0;
+  if(v.length >= 8) score++;
+  if(/[A-Z]/.test(v) && /[a-z]/.test(v)) score++;
+  if(/[0-9]/.test(v)) score++;
+  if(/[^A-Za-z0-9]/.test(v)) score++;
+
+  const levels = [
+    {w:'0%',   c:'#2A2D33', t:'At least 8 characters'},
+    {w:'25%',  c:'#E1483D', t:'Weak'},
+    {w:'50%',  c:'#EF9F27', t:'Fair'},
+    {w:'75%',  c:'#FFB020', t:'Good'},
+    {w:'100%', c:'#3DDC84', t:'Strong'},
+  ];
+  const lvl = levels[v.length === 0 ? 0 : score];
+  pwFill.style.width = lvl.w;
+  pwFill.style.background = lvl.c;
+  pwHint.textContent = lvl.t;
+  checkMatch();
+});
+
+function checkMatch(){
+  if(!pwConfirm.value){ matchHint.textContent = ''; return; }
+  const ok = pw.value === pwConfirm.value;
+  matchHint.textContent = ok ? 'Passwords match' : 'Passwords do not match';
+  matchHint.style.color = ok ? '#3DDC84' : '#E1483D';
+}
+pwConfirm.addEventListener('input', checkMatch);
+</script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+flask>=3.0,<4
+ultralytics>=8.3,<9
+pillow>=10,<13
+PyYAML>=6,<7

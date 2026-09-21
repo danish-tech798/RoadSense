@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoadSense</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="app">
+
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-mark">
+        <svg viewBox="0 0 32 32" fill="none">
+          <path d="M4 26 L16 4 L28 26" stroke="#FFB020" stroke-width="2.4" stroke-linejoin="round"/>
+          <rect x="12" y="16" width="8" height="8" stroke="#FFB020" stroke-width="1.6"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">RoadSense</div>
+        <div class="brand-tag">RIDE SAFER</div>
+      </div>
+    </div>
+
+    <nav class="nav" id="nav">
+      <div class="nav-item active" data-view="dashboard">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="5"/><rect x="13" y="11" width="8" height="10"/><rect x="3" y="14" width="8" height="7"/></svg>
+        Dashboard
+      </div>
+      <div class="nav-item" data-view="upload">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/><path d="M4 16v3a2 2 0 002 2h12a2 2 0 002-2v-3"/></svg>
+        Analyze Image
+      </div>
+      <div class="nav-item" data-view="history">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><path d="M12 7v5l3.5 2"/></svg>
+        Detection History
+      </div>
+      <div class="nav-item" data-view="analytics">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20V10M12 20V4M20 20v-7"/></svg>
+        Analytics
+      </div>
+      <div class="nav-item" data-view="live">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="6" width="13" height="12" rx="1"/><path d="M16 10l5-3v10l-5-3"/></svg>
+        Live Detection
+        <span class="nav-soon">SOON</span>
+      </div>
+      <div class="nav-item" data-view="profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c1.5-4 5-6 7.5-6s6 2 7.5 6"/></svg>
+        Profile
+      </div>
+      <div class="nav-item" data-view="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19 12a7 7 0 00-.1-1.2l2-1.5-2-3.4-2.3.9a7 7 0 00-2-1.2L14.2 3H9.8l-.4 2.6a7 7 0 00-2 1.2l-2.3-.9-2 3.4 2 1.5A7 7 0 005 12c0 .4 0 .8.1 1.2l-2 1.5 2 3.4 2.3-.9c.6.5 1.3.9 2 1.2l.4 2.6h4.4l.4-2.6c.7-.3 1.4-.7 2-1.2l2.3.9 2-3.4-2-1.5c.1-.4.1-.8.1-1.2z"/></svg>
+        Settings
+      </div>
+    </nav>
+
+    <div class="sidebar-foot">
+      <span id="modelStatus" role="status">Checking model…</span>
+      <a href="{{ url_for('logout') }}" style="color:var(--muted);">Log out</a>
+    </div>
+  </aside>
+
+  <div class="sidebar-backdrop" id="backdrop" onclick="closeSidebar()"></div>
+
+  <main class="main">
+    <div class="topbar">
+      <div style="display:flex;align-items:center;">
+        <button class="mobile-toggle" onclick="toggleSidebar()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+        </button>
+        <h1 id="pageTitle">Dashboard</h1>
+      </div>
+      <div class="topbar-right">
+        <span style="font-size:12px;color:var(--muted)">{{ name }}</span>
+        <div class="avatar">{{ name.split(' ')|map('first')|join('')|upper }}</div>
+      </div>
+    </div>
+
+    <div id="appError" class="app-error" role="alert" hidden></div>
+    <!-- DASHBOARD -->
+    <section class="view active" id="view-dashboard">
+      <div class="cta-band">
+        <div class="cta-copy">
+          <h2>Analyze a road image</h2>
+          <p>Upload a photo of the road ahead and RoadSense will detect signs, explain what they mean, and flag anything that needs your attention.</p>
+        </div>
+        <button class="btn-primary" onclick="setView('upload')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4M12 4l-4 4M12 4l4 4"/></svg>
+          Analyze Road Image
+        </button>
+      </div>
+
+      <div class="stat-row" id="statRow">
+        <div class="stat"><div class="stat-label">IMAGES WITH DETECTIONS</div><div class="stat-value num" id="statImages">0</div></div>
+        <div class="stat"><div class="stat-label">SIGNS DETECTED</div><div class="stat-value num" id="statSigns">0</div></div>
+        <div class="stat"><div class="stat-label">FLAGGED DETECTIONS</div><div class="stat-value num" id="statAlerts">0</div></div>
+        <div class="stat"><div class="stat-label">WARNING SIGNS</div><div class="stat-value num" id="statWarnings">0</div></div>
+      </div>
+
+      <div class="grid-2">
+        <div class="panel">
+          <h3>Recent Detections <span class="link" onclick="setView('history')">View all</span></h3>
+          <div id="recentList"><div class="empty-state">No detections yet — analyze an image to get started.</div></div>
+        </div>
+        <div class="panel">
+          <h3>Sign Category Breakdown</h3>
+          <div id="breakdownList"><div class="empty-state">No data yet.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- UPLOAD -->
+    <section class="view" id="view-upload">
+      <div style="max-width:640px;margin:0 auto;">
+        <div class="upload-zone" onclick="document.getElementById('fileInput').click()" id="uploadZone">
+          <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 16V4M12 4l-5 5M12 4l5 5"/><path d="M4 17v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+          <h3>Upload Road Image</h3>
+          <p>Drag &amp; drop your image here, or click to browse</p>
+          <button class="btn-secondary" type="button">Browse Files</button>
+          <div class="upload-formats">Supports JPG, PNG · up to 15MB</div>
+        </div>
+        <input type="file" id="fileInput" accept="image/jpeg,image/png" style="display:none;">
+
+        <div id="previewWrap" style="display:none;margin-top:20px;">
+          <div class="preview-wrap">
+            <div class="preview-img" id="previewImgWrap"></div>
+            <div class="preview-actions">
+              <span class="preview-filename" id="previewFilename"></span>
+              <div style="display:flex;gap:10px;">
+                <button class="btn-secondary" onclick="resetUpload()">Remove</button>
+                <button class="btn-primary" id="analyzeBtn" onclick="runAnalysis()">Analyze Image</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- AI ANALYSIS -->
+    <section class="view" id="view-analysis">
+      <div class="scan-frame" id="scanFrame" style="max-width:760px;margin:0 auto;">
+        <div class="hud-corner tl"></div><div class="hud-corner tr"></div><div class="hud-corner bl"></div><div class="hud-corner br"></div>
+        <div class="scan-line"></div>
+        <span style="position:absolute;top:14px;left:44px;font-size:11px;color:var(--muted)">Road scene — processing</span>
+      </div>
+      <p style="text-align:center;color:var(--muted);font-size:13px;margin-top:16px;"><span class="spin"></span>Running YOLOv8 inference...</p>
+    </section>
+
+    <!-- RESULTS -->
+    <section class="view" id="view-results">
+      <div class="results-wrap">
+        <div>
+          <div class="result-img" id="resultImgWrap"></div>
+          <div style="display:flex;justify-content:space-between;margin-top:12px;">
+            <span style="font-size:12px;color:var(--muted)" id="resultSummary"></span>
+          </div>
+          <div id="resultAlerts" style="margin-top:18px;"></div>
+          <div class="voice-widget" style="margin-top:10px;">
+            <button class="voice-btn" id="voiceBtn" aria-label="Read predicted signs" disabled onclick="speakAlert()">▶</button>
+            <div class="waveform" id="waveform">
+              <div class="wf-bar"></div><div class="wf-bar"></div><div class="wf-bar"></div><div class="wf-bar"></div>
+              <div class="wf-bar"></div><div class="wf-bar"></div><div class="wf-bar"></div><div class="wf-bar"></div>
+            </div>
+            <span style="font-size:11.5px;color:var(--muted);white-space:nowrap;" id="voiceStatus">No predictions to read</span>
+          </div>
+        </div>
+        <div>
+          <h3 style="font-size:14px;margin-bottom:12px;">Detected Signs</h3>
+          <div class="form-row"><label for="resultClassFilter">FILTER DETECTED CLASS</label><select id="resultClassFilter"><option value="">All detected classes</option></select></div>
+          <div id="signCardsList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section class="view" id="view-history">
+      <div class="filter-row">
+        <div class="form-row"><label for="historyClassFilter">CLASS</label><select id="historyClassFilter"><option value="">All classes</option></select></div>
+        <div class="form-row"><label for="historySearch">SEARCH</label><input id="historySearch" type="search" placeholder="Sign name or date"></div>
+      </div>
+      <div class="timeline" id="historyTimeline">
+        <div class="empty-state">No detections logged yet.</div>
+      </div>
+    </section>
+
+    <!-- ANALYTICS -->
+    <section class="view" id="view-analytics">
+      <div class="grid-2">
+        <div class="panel">
+          <h3>Signs Detected by Category</h3>
+          <div class="category-list" id="categoryBars"></div>
+        </div>
+        <div class="panel">
+          <h3>Confidence Score Distribution</h3>
+          <div class="bars" id="confidenceBars"></div>
+        </div>
+      </div>
+      <div class="panel" style="margin-top:16px;">
+        <h3>Detection Activity Over Time</h3>
+        <div id="activityChart"></div>
+      </div>
+    </section>
+
+    <!-- LIVE (COMING SOON) -->
+    <section class="view" id="view-live">
+      <div class="soon-frame">
+        <span class="soon-badge">COMING SOON — LIVE ROAD SIGN DETECTION</span>
+        <div class="hud-corner tl"></div><div class="hud-corner tr"></div><div class="hud-corner bl"></div><div class="hud-corner br"></div>
+        <div class="soon-overlay">
+          <h3>Live camera detection is on the way</h3>
+          <p>Camera input is not implemented. Use image upload to evaluate the model.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section class="view" id="view-profile">
+      <div class="panel" style="max-width:480px;">
+        <h3>Profile</h3>
+        <div class="form-row"><label>NAME</label><input type="text" value="{{ name }}" disabled></div>
+        <div class="form-row"><label>ROLE</label><input type="text" value="Final Year Student — Capstone Project" disabled></div>
+      </div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="view" id="view-settings">
+      <div class="panel" style="max-width:480px;">
+        <h3>Settings</h3>
+        <div class="form-row">
+          <label>CONFIDENCE THRESHOLD (<span id="confValLabel">0.25</span>)</label>
+          <input type="range" id="confSlider" min="0.1" max="0.95" step="0.05" value="0.25" style="width:100%;max-width:360px;">
+        </div>
+        <div class="form-row"><label for="imageSize">INFERENCE RESOLUTION</label><select id="imageSize"><option value="640">640 — faster</option><option value="960">960 — more image detail</option><option value="1280">1280 — highest computation</option></select><p class="help-text">Higher resolution uses more memory and time. Compare on validation images.</p></div>
+        <div class="form-row"><label for="voiceEnabled">VOICE PLAYBACK</label><select id="voiceEnabled"><option value="on">Enabled</option><option value="off">Disabled</option></select></div>
+        <div class="form-row"><label>UNITS</label><select disabled><option>Kilometers / hour</option></select></div>
+      </div>
+      <div class="panel model-panel">
+        <h3>Active model</h3><p id="modelDetails" class="help-text">Loading model information…</p>
+        <div class="form-row"><label for="classSearch">SEARCH SUPPORTED CLASSES</label><input id="classSearch" type="search" placeholder="Search speed, stop, school…"></div>
+        <div id="supportedClasses" class="class-list"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+window.SIGN_INFO = {{ sign_info|tojson }};
+</script>
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

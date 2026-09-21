@@ -1,0 +1,32 @@
+# Python environments and cache
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local accounts and detection history
+*.db
+*.db-*
+*.sqlite
+*.sqlite3
+logs/
+uploads/
+instance/
+
+# Datasets and training output
+datasets/
+data/
+runs/
+*.zip
+
+# Model checkpoints: include only the deployed model
+*.pt
+!models/
+!models/best_india.pt

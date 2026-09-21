@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RoadSense — Sign In</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="brand" style="border:none;padding:0;margin-bottom:6px;">
+      <div class="brand-mark">
+        <svg viewBox="0 0 32 32" fill="none">
+          <path d="M4 26 L16 4 L28 26" stroke="#FFB020" stroke-width="2.4" stroke-linejoin="round"/>
+          <rect x="12" y="16" width="8" height="8" stroke="#FFB020" stroke-width="1.6"/>
+        </svg>
+      </div>
+      <div>
+        <div class="brand-name">RoadSense</div>
+        <div class="brand-tag">RIDE SAFER</div>
+      </div>
+    </div>
+    <h2>Sign in</h2>
+    <p class="sub">See the sign. Know the road. Ride safer.</p>
+
+    {% if error %}
+    <div class="login-error">{{ error }}</div>
+    {% endif %}
+
+    <form method="POST">
+      <div class="login-field">
+        <label>USERNAME OR EMAIL</label>
+        <input type="text" name="username" autocomplete="username" required>
+      </div>
+      <div class="login-field">
+        <label>PASSWORD</label>
+        <input type="password" name="password" autocomplete="current-password" required>
+      </div>
+      <button type="submit" class="btn-primary btn-full">Sign In</button>
+    </form>
+    <div class="login-hint">
+      {% if has_users %}
+        Don't have an account? <a href="{{ url_for('signup') }}">Create one</a>
+      {% else %}
+        No accounts yet — <a href="{{ url_for('signup') }}">create the first one</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+</body>
+</html>
