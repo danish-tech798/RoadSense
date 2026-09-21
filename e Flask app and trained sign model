@@ -1,0 +1,11 @@
+.gitignore
+app.py
+db.py
+models/best_india.pt
+requirements.txt
+sign_catalog.py
+static/app.js
+static/style.css
+templates/dashboard.html
+templates/login.html
+templates/signup.html
