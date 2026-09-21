@@ -1,5 +1,5 @@
 flask>=3.0,<4
-ultralytics>=8.3,<9
+ultralytics==8.4.155
 pillow>=10,<13
 PyYAML>=6,<7
 gunicorn>=23,<24
